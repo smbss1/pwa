@@ -41,7 +41,7 @@ const RecipeCard: React.FC<ReciepeCardProps> = ({
             <div className="vertical-sep"></div>
             <div className="group3">
               <p className="info">Cuisson</p>
-              <p className="time">{cookTime}h</p>
+              <p className="time">{cookTime}min</p>
             </div>
             <div className="vertical-sep"></div>
             <div className="group3">
