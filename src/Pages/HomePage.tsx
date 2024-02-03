@@ -20,6 +20,8 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Recipe from "./Recipe";
 import { getApi } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
+import { useNetworkStatus } from "../hooks/useNetworkStatus";
+import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
 
 const HomePage = () => {
   interface Recipe {
@@ -47,29 +49,34 @@ const HomePage = () => {
   const auth = useAuth();
 
   let category = searchParams.get('category') || '';
+  const isOnline = useNetworkStatus();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getApi('recipes');
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          const recipesWithAuthor = data.map(recipe => ({
-            ...recipe,
-            auteur: recipe.author.username,
-          }));
-          setRecipes(recipesWithAuthor);
-        } else {
-          setRecipes([]);
-        }
-      } catch (error) {
-        console.error('There was an error!', error);
+  const fetchUserRecipe = useCallback(async () => {
+    try {
+      const response = await getApi('recipes');
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        const recipesWithAuthor = data.map(recipe => ({
+          ...recipe,
+          auteur: recipe.author.username,
+        }));
+        setRecipes(recipesWithAuthor);
+      } else {
         setRecipes([]);
       }
-    };
-
-    fetchData();
+    } catch (error) {
+      console.error('There was an error!', error);
+      setRecipes([]);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!isOnline)
+      return;
+    fetchUserRecipe();
+  }, [fetchUserRecipe, isOnline]);
+
+  useServiceWorkerMessage('RECIPE_SYNC_COMPLETED', fetchUserRecipe);
 
   const handleCategoryClick = useCallback((category: string) => {
     setSearchParams({ category: category });
@@ -111,6 +118,8 @@ const HomePage = () => {
   }, [setSearchParams]);
 
   useEffect(() => {
+    if (!isOnline)
+      return;
     if (category === '')
       return;
 
@@ -120,13 +129,15 @@ const HomePage = () => {
     }
 
     handleCategoryClick(category);
-  }, [category, handleCategoryClick, handleFavoriteClick, recipes]);
+  }, [category, handleCategoryClick, handleFavoriteClick, recipes, isOnline]);
 
   useEffect(() => {
+    if (!isOnline)
+      return;
     if (category !== '')
       return;
     sortRecipes(sortValue); // Call sortRecipes when sortValue changes or recipes data is updated
-  }, [sortValue, recipes]);
+  }, [sortValue, recipes, isOnline]);
 
   const sortRecipes = (sortOrder: string) => {
     let sortedRecipes = [...recipes];

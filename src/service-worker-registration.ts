@@ -161,3 +161,21 @@ export function unregister() {
       });
   }
 }
+
+window.addEventListener('load', () => {
+  function handleNetworkChange(event: any) {
+    if (navigator.onLine) {
+      // Possibly hide offline warning and fetch fresh content
+    } else {
+      alert('You are now offline. Some features may be unavailable.');
+    }
+  }
+
+  window.addEventListener('online',  handleNetworkChange);
+  window.addEventListener('offline', handleNetworkChange);
+
+  // Initial check
+  if (!navigator.onLine) {
+    alert('You are offline. Content is being served from the cache.');
+  }
+});

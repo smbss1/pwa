@@ -1,11 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./ProfilePage.css";
 import Navbar from "../Components/Navbar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RecipeCard from "../Components/RecipeCard";
 import NotificationModal from "../Components/NotificationModal";
 import { getApi, getUrl } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
+import { useNetworkStatus } from "../hooks/useNetworkStatus";
+import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
 
 const ProfilePage = () => {
   const { username, userId } = useParams();
@@ -37,12 +39,15 @@ const ProfilePage = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const navigate = useNavigate();
+  const isOnline = useNetworkStatus();
 
   const handleCardClick = (recipe: Recipe) => {
     navigate(`/recipe/${recipe.id}`);
   };
 
   useEffect(() => {
+    if (!isOnline)
+      return;
     const fetchProfileData = async () => {
       if (!auth.isLoggedIn) return;
       try {
@@ -56,7 +61,7 @@ const ProfilePage = () => {
     };
 
     fetchProfileData();
-  }, [userId]);
+  }, [userId, isOnline]);
 
   const toggleFollow = async () => {
     if (Notification.permission === "default" && !isFollowing) {
@@ -81,28 +86,32 @@ const ProfilePage = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getApi(`recipes/users/${userId}`);
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          const recipesWithAuthor = data.map(recipe => ({
-            ...recipe,
-            auteur: recipe.author.username,
-          }));
-          setRecipes(recipesWithAuthor);
-        } else {
-          setRecipes([]);
-        }
-      } catch (error) {
-        console.error('There was an error!', error);
+  const fetchUserRecipe = useCallback(async () => {
+    try {
+      const response = await getApi(`recipes/users/${userId}`);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        const recipesWithAuthor = data.map(recipe => ({
+          ...recipe,
+          auteur: recipe.author.username,
+        }));
+        setRecipes(recipesWithAuthor);
+      } else {
         setRecipes([]);
       }
-    };
+    } catch (error) {
+      console.error('There was an error!', error);
+      setRecipes([]);
+    }
+  }, [userId]);
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (!isOnline)
+      return;
+    fetchUserRecipe();
+  }, [fetchUserRecipe, isOnline]);
+
+  useServiceWorkerMessage('RECIPE_SYNC_COMPLETED', fetchUserRecipe);
 
   return (
     <div className="page-profile">

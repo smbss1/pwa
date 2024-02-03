@@ -13,9 +13,29 @@ import { ExpirationPlugin } from "workbox-expiration";
 import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { NetworkFirst, NetworkOnly, StaleWhileRevalidate } from "workbox-strategies";
-import {Queue} from 'workbox-background-sync';
+import {BackgroundSyncPlugin} from 'workbox-background-sync';
 
-const queue = new Queue('myQueueName');
+const bgSyncPlugin = new BackgroundSyncPlugin('recipeQueue', {
+  maxRetentionTime: 24 * 60, // Retry for max of 24 Hours
+  onSync: async ({ queue }) => {
+    let entry;
+    while (entry = await queue.shiftRequest()) {
+      try {
+        // Try to replay the request.
+        await fetch(entry.request);
+      } catch (error) {
+        // If replay fails, put the request back in the queue.
+        await queue.unshiftRequest(entry);
+        break;
+      }
+    }
+    self.clients.matchAll().then(all => all.forEach(client => {
+      client.postMessage({
+        type: 'RECIPE_SYNC_COMPLETED',
+      });
+    }));
+  },
+});
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -69,7 +89,8 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({ maxEntries: 50 }),
     ],
-  })
+  }),
+  'GET'
 );
 
 registerRoute(
@@ -94,6 +115,14 @@ registerRoute(
       new ExpirationPlugin({ maxEntries: 2 }),
     ],
   })
+);
+
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/recipes'), // Adjust this regex based on your API endpoint
+  new NetworkOnly({
+    plugins: [bgSyncPlugin],
+  }),
+  'POST'
 );
 
 
@@ -163,22 +192,4 @@ self.addEventListener("push", function (event) {
 
 self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
-});
-
-registerRoute(
-  RegExp('/recipes'),
-  new NetworkOnly()
-);
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method === 'POST' && !event.defaultPrevented) {
-    event.respondWith(
-      fetch(event.request).catch((error) => {
-        console.error('Erreur de fetch POST:', error);
-        self.dispatchEvent(new CustomEvent('postFetchError', { detail: { error } }));
-        queue.pushRequest({ request: event.request });
-        throw error;
-      })
-    );
-  }
 });

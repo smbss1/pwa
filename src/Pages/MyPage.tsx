@@ -9,6 +9,8 @@ import RecipeModalForm from "../Components/RecipeModalForm";
 import Modal from "../Components/Modal";
 import "./ProfilePage.css";
 import { deleteApi, getApi } from "../Util/apiControleur";
+import { useNetworkStatus } from "../hooks/useNetworkStatus";
+import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
 
 const MyPage = () => {
     interface Recipe {
@@ -30,7 +32,8 @@ const MyPage = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { author } = useParams();
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const isOnline = useNetworkStatus();
 
   const fetchUserRecipe = async () => {
     const userId = localStorage.getItem("userId");
@@ -52,9 +55,11 @@ const MyPage = () => {
     }
   };
 
+  useServiceWorkerMessage('RECIPE_SYNC_COMPLETED', fetchUserRecipe);
+
   useEffect(() => {
     fetchUserRecipe();
-  }, []);
+  }, [isOnline]);
 
   const handleCardClick = (recipe: Recipe) => {
     navigate(`/recipe/${recipe.id}`);
