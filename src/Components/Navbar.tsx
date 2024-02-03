@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
       <ul className="nav-list">
         <div className="group-left">
           <li className="nav-item">
-            <Link to="/">Home Page</Link>
+            <Link to="/">Accueil</Link>
           </li>
           <li className="nav-item">
             <Link to={`/me/${username}`}>Mon Espace</Link>

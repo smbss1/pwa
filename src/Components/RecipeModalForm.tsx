@@ -20,7 +20,7 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
 
   const [formData, setFormData] = useState({
     author: user ? user.name : '',
-    imageUrl: '',
+    imageUrl: undefined,
     title: '',
     category: '',
     servings: 1,
@@ -32,7 +32,7 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
 
   const initialFormData = {
     author: user ? user.name : '',
-    imageUrl: '',
+    imageUrl: undefined,
     title: '',
     category: '',
     servings: 1,
@@ -122,7 +122,7 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
             <input
               type="text"
               name="imageUrl"
-              value={formData.imageUrl}
+              value={formData.imageUrl ?? ''}
               onChange={handleChange}
               placeholder="Image URL"
             />
@@ -131,11 +131,11 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Title"
+              placeholder="Titre"
             />
 
             <select name="category" value={formData.category} onChange={handleChange}>
-              <option value="">Select a category</option>
+              <option value="">Selectionner une categorie</option>
               <option value="Pizza">Pizza</option>
               <option value="Burger">Burger</option>
               <option value="Nouille">Nouille</option>
@@ -178,17 +178,17 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
                     type="text"
                     value={ingredient.name}
                     onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
-                    placeholder="Ingredient name"
+                    placeholder="Nom de l'ingredient"
                   />
                   <input
                     type="text"
                     value={ingredient.quantity}
                     onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
-                    placeholder="Quantity"
+                    placeholder="Quantité"
                   />
                 </div>
               ))}
-              <button type="button" onClick={handleAddIngredient}>Add Ingredient</button>
+              <button type="button" onClick={handleAddIngredient}>Ajouter un ingredient</button>
             </div>
             <div className="steps">
               <p className="info">Étapes</p>
@@ -201,11 +201,11 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
                   placeholder={`Step ${index + 1}`}
                 />
               ))}
-              <button type="button" onClick={handleAddStep}>Add Step</button>
+              <button type="button" onClick={handleAddStep}>Ajouter une étape</button>
             </div>
           </div>
         </div>
-        <button type="submit" className="submit">Submit</button>
+        <button type="submit" className="submit">Ajouter</button>
       </form>
     </div>
   );

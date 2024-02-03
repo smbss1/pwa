@@ -11,7 +11,7 @@ interface SortBySelectProps {
 const SortBySelect: React.FC<SortBySelectProps> = ({ sortValue, handleChange }) => {
   return (
     <div className="sortby">
-      <label htmlFor="sortby">Sort by:</label>
+      <label htmlFor="sortby">Trier par:</label>
       <select
         className="select-sortby"
         id="sortby"

@@ -94,11 +94,11 @@ const LoginPage: React.FC<LoginPageProps> = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button className='button-log' type='submit'>Je m'inscrit</button>
+            <button className='button-log' type='submit'>Je m'inscris</button>
             <a id="SignUp" onClick={handleSignInClick}>deja un compte?</a>
             <div className="social-container">
-              <a className="social"><img src="google.png" alt="google logo" /></a>
-              <a className="social"><img src="facebook.png" alt="facebook logo" /></a>
+              {/* <a className="social"><img src="google.png" alt="google logo" /></a>
+              <a className="social"><img src="facebook.png" alt="facebook logo" /></a> */}
             </div>
           </form>
       </div>
@@ -130,12 +130,12 @@ const LoginPage: React.FC<LoginPageProps> = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <a>mot de passe oublié? t'es chaud toi</a>
+          <a>mot de passe oublié ?</a>
           <button className='button-log' type='submit'>Me connecter</button>
-          <a id="SignIn" onClick={handleSignUpClick}>pas de compte? inscrit toi</a>
+          <a id="SignIn" onClick={handleSignUpClick}>pas de compte? inscris-toi</a>
           <div className="social-container">
-            <a className="social"><img src="google.png" alt="google logo" /></a>
-            <a className="social"><img src="facebook.png" alt="facebook logo" /></a>
+            {/* <a className="social"><img src="google.png" alt="google logo" /></a>
+            <a className="social"><img src="facebook.png" alt="facebook logo" /></a> */}
           </div>
         </form>
       </div>

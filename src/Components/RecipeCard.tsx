@@ -24,7 +24,7 @@ const RecipeCard: React.FC<ReciepeCardProps> = ({
 }) => {
   return (
     <div className="card" onClick={onCardClick}>
-      {canDelete && <button onClick={canDelete}>delete</button> }
+      {canDelete && <button className="left-pos-card" onClick={canDelete}>X</button> }
       <div className="group">
         <div className="card-img">
           <img src={imageUrl} alt="reciepe img" />
@@ -34,18 +34,18 @@ const RecipeCard: React.FC<ReciepeCardProps> = ({
           <p>{description}</p>
           <div className="group-bottom">
             <div className="group3">
-              <p className="info">Serving</p>
+              <p className="info">Personnes</p>
               <FontAwesomeIcon className="small-icon" icon={faUser} />
               <FontAwesomeIcon className="small-icon" icon={faUser} />
             </div>
             <div className="vertical-sep"></div>
             <div className="group3">
-              <p className="info">Cook time</p>
-              <p className="time">{cookTime}</p>
+              <p className="info">Cuisson</p>
+              <p className="time">{cookTime}h</p>
             </div>
             <div className="vertical-sep"></div>
             <div className="group3">
-              <p className="info">Likes</p>
+              <p className="info">Aimes</p>
               <button>
                 <FontAwesomeIcon className="small-icon" icon={faUser} />
                 <p className="time">{likes}</p>
