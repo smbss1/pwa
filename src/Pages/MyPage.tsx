@@ -11,6 +11,7 @@ import "./ProfilePage.css";
 import { deleteApi, getApi } from "../Util/apiControleur";
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
+import { ClipLoader } from "react-spinners";
 
 const MyPage = () => {
     interface Recipe {
@@ -34,9 +35,11 @@ const MyPage = () => {
   const { author } = useParams();
   const navigate = useNavigate();
   const isOnline = useNetworkStatus();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchUserRecipe = async () => {
-    const userId = localStorage.getItem("userId");
+      setIsLoading(true);
+      const userId = localStorage.getItem("userId");
     try {
       const response = await getApi(`recipes/users/${userId}`);
       const data = await response.json();
@@ -53,6 +56,7 @@ const MyPage = () => {
       console.error('There was an error!', error);
       setRecipes([]);
     }
+    setIsLoading(false);
   };
 
   useServiceWorkerMessage('RECIPE_SYNC_COMPLETED', fetchUserRecipe);
@@ -93,25 +97,31 @@ const MyPage = () => {
             <div className="corner top-left"></div>
             <div className="corner top-right"></div>
             <div className="results">
-                {recipes && recipes.length > 0 ? (
-                    recipes.map((recipe, index) => (
-                    <RecipeCard
-                        key={index}
-                        imageUrl={recipe.imageUrl}
-                        title={recipe.title}
-                        description={recipe.description}
-                        cookTime={recipe.cookTime}
-                        likes={recipe.likes}
-                        onCardClick={() => handleCardClick(recipe)}
-                        canDelete={evt => {
-                          evt.stopPropagation();
-                          canDelete(recipe.id)}
-                        }
-                    />
-                    ))
-                ) : (
-                    <p>Aucune recette trouvée</p>
-                )}
+              {isLoading ? (
+                <ClipLoader className="loader" color={'#000'} loading={true} size={150} />
+              ) : (
+                <>
+                  {recipes && recipes.length > 0 ? (
+                      recipes.map((recipe, index) => (
+                      <RecipeCard
+                          key={index}
+                          imageUrl={recipe.imageUrl}
+                          title={recipe.title}
+                          description={recipe.description}
+                          cookTime={recipe.cookTime}
+                          likes={recipe.likes}
+                          onCardClick={() => handleCardClick(recipe)}
+                          canDelete={evt => {
+                            evt.stopPropagation();
+                            canDelete(recipe.id)}
+                          }
+                      />
+                      ))
+                  ) : (
+                      <p>Aucune recette trouvée</p>
+                  )}
+                  </>
+              )}
                 </div>
                 {selectedRecipe && (
                 <RecipeDetailsModal

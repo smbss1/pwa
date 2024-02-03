@@ -8,6 +8,7 @@ import { getApi, getUrl } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
+import { ClipLoader } from "react-spinners";
 
 const ProfilePage = () => {
   const { username, userId } = useParams();
@@ -40,6 +41,7 @@ const ProfilePage = () => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const navigate = useNavigate();
   const isOnline = useNetworkStatus();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleCardClick = (recipe: Recipe) => {
     navigate(`/recipe/${recipe.id}`);
@@ -87,7 +89,8 @@ const ProfilePage = () => {
   };
 
   const fetchUserRecipe = useCallback(async () => {
-    try {
+      setIsLoading(true);
+      try {
       const response = await getApi(`recipes/users/${userId}`);
       const data = await response.json();
       if (Array.isArray(data)) {
@@ -103,6 +106,7 @@ const ProfilePage = () => {
       console.error('There was an error!', error);
       setRecipes([]);
     }
+    setIsLoading(false);
   }, [userId]);
 
   useEffect(() => {
@@ -133,21 +137,27 @@ const ProfilePage = () => {
         <div className="corner top-right"></div>
         <div className="res">
           <div className="results">
-            {recipes && recipes.length > 0 ? (
-              recipes.map((recipe, index) => (
-                <RecipeCard
-                  key={index}
-                  imageUrl={recipe.imageUrl}
-                  title={recipe.title}
-                  description={recipe.description}
-                  cookTime={recipe.cookTime}
-                  likes={recipe.likes}
-                  onCardClick={() => handleCardClick(recipe)}
-                />
-              ))
-            ) : (
-              <p>Aucune recette trouvée</p>
-            )}
+          {isLoading ? (
+            <ClipLoader className="loader" color={'#000'} loading={true} size={150} />
+          ) : (
+            <>
+              {recipes && recipes.length > 0 ? (
+                recipes.map((recipe, index) => (
+                  <RecipeCard
+                    key={index}
+                    imageUrl={recipe.imageUrl}
+                    title={recipe.title}
+                    description={recipe.description}
+                    cookTime={recipe.cookTime}
+                    likes={recipe.likes}
+                    onCardClick={() => handleCardClick(recipe)}
+                  />
+                ))
+              ) : (
+                <p>Aucune recette trouvée</p>
+              )}
+            </>
+          )}
           </div>
         </div>
       </div>

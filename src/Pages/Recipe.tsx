@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "./ProfilePage.css";
 import { getApi, getUrl, patchApi } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
+import { ClipLoader } from "react-spinners";
 
 const options: Intl.DateTimeFormatOptions = {
   weekday: 'long',
@@ -53,9 +54,11 @@ const Recipe = () => {
   };
 
   const [recipe, setRecipes] = useState<Recipe>(initialRecipe);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await getApi(`recipes/${recipeId}`);
         const data = await response.json();
@@ -73,6 +76,7 @@ const Recipe = () => {
       } catch (error) {
         console.error("There was an error!", error);
       }
+      setIsLoading(false);
     };
 
     fetchData();
@@ -150,6 +154,10 @@ const Recipe = () => {
           >
             ×
           </button>
+          {isLoading ? (
+            <ClipLoader className="loader" color={'#000'} loading={true} size={150} />
+          ) : (
+            <>
           <div className="modal-content-left">
             <div className="modal-body">
               <p>{recipe.description}</p>
@@ -196,6 +204,8 @@ const Recipe = () => {
             )}
             <p>ajouté le {recipe.date}</p>
           </div>
+          </>
+          )}
           <div className="modal-footer">{}</div>
         </div>
       </div>

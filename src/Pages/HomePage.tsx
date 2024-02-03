@@ -22,6 +22,7 @@ import { getApi } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
+import { ClipLoader } from "react-spinners";
 
 const HomePage = () => {
   interface Recipe {
@@ -45,6 +46,7 @@ const HomePage = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const auth = useAuth();
 
@@ -53,6 +55,7 @@ const HomePage = () => {
 
   const fetchUserRecipe = useCallback(async () => {
     try {
+      setIsLoading(true);
       const response = await getApi('recipes');
       const data = await response.json();
       if (Array.isArray(data)) {
@@ -68,6 +71,7 @@ const HomePage = () => {
       console.error('There was an error!', error);
       setRecipes([]);
     }
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -96,6 +100,7 @@ const HomePage = () => {
     }
     setSearchParams({ category: 'Favorite' });
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await getApi(`recipes/liked`);
         const data = await response.json();
@@ -104,12 +109,15 @@ const HomePage = () => {
             ...recipe,
             auteur: recipe.author.username,
           }));
+          setIsLoading(false);
           return recipesWithAuthor;
         } else {
+          setIsLoading(false);
           return [];
         }
       } catch (error) {
         console.error('There was an error!', error);
+        setIsLoading(false);
         return [];
       }
     };
@@ -211,9 +219,16 @@ const HomePage = () => {
             <SortBySelect sortValue={sortValue} handleChange={handleChangeSelect} />
           </div>
           <div className="results">
-            {filteredRecipes.map((recipe, index) => (
-              <RecipeCard key={index} imageUrl={recipe.imageUrl} title={recipe.title} description={recipe.description} cookTime={recipe.cookTime} likes={recipe.likes} onCardClick={() => handleCardClick(recipe)} />
-            ))}
+            {isLoading ? (
+              <ClipLoader className="loader" color={'#000'} loading={true} size={150} />
+            ) : (
+              <>
+                {filteredRecipes.length === 0 && <h2>Aucune recette trouvée</h2>}
+                {filteredRecipes.map((recipe, index) => (
+                  <RecipeCard key={index} imageUrl={recipe.imageUrl} title={recipe.title} description={recipe.description} cookTime={recipe.cookTime} likes={recipe.likes} onCardClick={() => handleCardClick(recipe)} />
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

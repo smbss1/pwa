@@ -19,6 +19,7 @@
     "react-push-notification": "^1.5.4",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
+    "react-spinners": "^0.13.8",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.6.0",
