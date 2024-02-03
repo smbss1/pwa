@@ -17,6 +17,8 @@
     width: 70%;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
+    overflow: auto;
+    max-height: 600px;
   }
   
   .modal-close-button {

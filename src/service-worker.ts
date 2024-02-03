@@ -63,9 +63,7 @@ registerRoute(
 // );
 
 registerRoute(
-  // Add in any other file extensions or routing criteria as needed.
   ({ url }) => url.pathname.startsWith('/recipes/'),
-  // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new NetworkFirst({
     cacheName: "recipes",
     plugins: [
@@ -171,17 +169,6 @@ registerRoute(
   RegExp('/recipes'),
   new NetworkOnly()
 );
-
-registerRoute(
-  // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.pathname.startsWith("/recipes/"),
-  // Customize this strategy as needed, e.g., by changing to CacheFirst.
-  new StaleWhileRevalidate({
-    cacheName: "recipes",
-    plugins: [new ExpirationPlugin({ maxEntries: 50 })],
-  })
-);
-
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method === 'POST' && !event.defaultPrevented) {

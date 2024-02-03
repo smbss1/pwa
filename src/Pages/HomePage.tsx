@@ -7,6 +7,7 @@ import {
   faEllipsis,
   faBurger,
   faHeart,
+  faPlateWheat,
 } from "@fortawesome/free-solid-svg-icons";
 import "./HomePage.css";
 import IconButton from "../Components/IconButton";
@@ -41,14 +42,10 @@ const HomePage = () => {
   const [sortValue, setSortValue] = useState<string>('recent');
   const [inputValue, setInputValue] = useState<string>('');
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const navigate = useNavigate();
   const auth = useAuth();
 
-  // Read a parameter named "query"
-  let query = searchParams.get('search');
   let category = searchParams.get('category') || '';
 
   useEffect(() => {
@@ -77,7 +74,11 @@ const HomePage = () => {
   const handleCategoryClick = useCallback((category: string) => {
     setSearchParams({ category: category });
 
-    setSelectedCategory(category);
+    if (category === 'Tout') {
+      setFilteredRecipes(recipes);
+      return;
+    }
+
     const filtered = recipes.filter(recipe => recipe.category === category);
     setFilteredRecipes(filtered);
   }, [recipes, setSearchParams]);
@@ -183,6 +184,7 @@ const HomePage = () => {
         <div className="categories">
           <h1>Recettes</h1>
           <div className="button-container">
+            <IconButton icon={faPlateWheat} label="Tout" onClick={() => handleCategoryClick("Tout")} />
             <IconButton icon={faPizzaSlice} label="Pizza" onClick={() => handleCategoryClick("Pizza")} />
             <IconButton icon={faBurger} label="Burger" onClick={() => handleCategoryClick("Burger")} />
             <IconButton icon={faBowlFood} label="Nouille" onClick={() => handleCategoryClick("Nouille")} />

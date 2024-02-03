@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
     localStorage.removeItem('id');
     localStorage.removeItem('accessToken');
     window.location.reload();
-    navigate('/login');
+    navigate('/');
   };
   
   return (
@@ -35,10 +35,10 @@ const Navbar: React.FC = () => {
           <li className="nav-item right">
           {auth.isLoggedIn ? (
             <button onClick={handleLogout} className="signUp">
-              <Link to="/login">Me Deconnecter</Link>
+              <Link to="/">Me Deconnecter</Link>
             </button>
           ) : (
-            <button onClick={handleLogout} className="signUp">
+            <button className="signUp">
               <Link to="/login">Se Connecter</Link>
             </button>
           )}
