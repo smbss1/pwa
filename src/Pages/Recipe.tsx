@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./ProfilePage.css";
 import { getApi, getUrl, patchApi } from "../Util/apiControleur";
+import { useAuth } from "../Context/AuthContext";
 
 const options: Intl.DateTimeFormatOptions = {
   weekday: 'long',
@@ -13,6 +14,7 @@ const options: Intl.DateTimeFormatOptions = {
 const Recipe = () => {
   const { recipeId } = useParams();
   let recipeId2: number = recipeId ? parseInt(recipeId, 10) : 0;
+  const auth = useAuth();
 
   interface Recipe {
     some(arg0: (likedRecipe: { id: { toString: () => string | undefined; }; }) => boolean): unknown;
@@ -83,6 +85,8 @@ const Recipe = () => {
   }
 
   useEffect(() => {
+    if (!auth.isLoggedIn) return;
+
     const fetchData = async () => {
       try {
         const response = await getApi(`recipes/liked`);
@@ -102,7 +106,7 @@ const Recipe = () => {
     fetchData();
   }, []);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const toggleLike = async () => {
     if (liked) {
@@ -185,9 +189,11 @@ const Recipe = () => {
                 </Link>
               </h4>
             </div>
-            <button onClick={toggleLike}>
-              {liked ? "Ne plus aimé" : "Aimé"}
-            </button>
+            { auth.isLoggedIn && (
+              <button onClick={toggleLike}>
+                {liked ? "Ne plus aimé" : "Aimé"}
+              </button>
+            )}
             <p>ajouté le {recipe.date}</p>
           </div>
           <div className="modal-footer">{}</div>

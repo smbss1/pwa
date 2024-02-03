@@ -18,6 +18,7 @@ import RecipeCard from "../Components/RecipeCard";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Recipe from "./Recipe";
 import { getApi } from "../Util/apiControleur";
+import { useAuth } from "../Context/AuthContext";
 
 const HomePage = () => {
   interface Recipe {
@@ -44,6 +45,7 @@ const HomePage = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const navigate = useNavigate();
+  const auth = useAuth();
 
   // Read a parameter named "query"
   let query = searchParams.get('search');
@@ -81,6 +83,9 @@ const HomePage = () => {
   }, [recipes, setSearchParams]);
 
   const handleFavoriteClick = useCallback(async () => {
+    if (!auth.isLoggedIn) {
+      return;
+    }
     setSearchParams({ category: 'Favorite' });
     const fetchData = async () => {
       try {
@@ -184,7 +189,7 @@ const HomePage = () => {
             <IconButton icon={faDrumstickBite} label="Viande" onClick={() => handleCategoryClick("Viande")} />
             <IconButton icon={faCake} label="Dessert" onClick={() => handleCategoryClick("Dessert")} />
             <IconButton icon={faEllipsis} label="Autre" onClick={() => handleCategoryClick("Autre")} />
-            <IconButton icon={faHeart} label="Favoris" onClick={() => handleFavoriteClick()} />
+            {auth.isLoggedIn && <IconButton icon={faHeart} label="Favoris" onClick={() => handleFavoriteClick()} /> }
           </div>
         </div>
         <div className="res">

@@ -18,13 +18,13 @@ function App() {
     return (
         <AuthProvider>
             <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/recipe/:recipeId" element={<Recipe />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/profile/:username/:userId" element={<ProfilePage />} />
 
                 <Route element={<ProtectedRoute />}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/profile/:username/:userId" element={<ProfilePage />} />
                     <Route path="/me/:author" element={<MyPage />} />
-                    <Route path="/recipe/:recipeId" element={<Recipe />} />
                 </Route>
             </Routes>
         </AuthProvider>

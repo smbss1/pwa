@@ -2,14 +2,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./ProfilePage.css";
 import Navbar from "../Components/Navbar";
 import { useEffect, useState } from "react";
-import RecipeDetailsModal from "../Components/RecipeDetailsModal";
 import RecipeCard from "../Components/RecipeCard";
 import NotificationModal from "../Components/NotificationModal";
 import { getApi, getUrl } from "../Util/apiControleur";
+import { useAuth } from "../Context/AuthContext";
 
 const ProfilePage = () => {
   const { username, userId } = useParams();
   const myId = localStorage.getItem('userId');
+  const auth = useAuth();
 
   interface Recipe {
     id: number;
@@ -33,24 +34,17 @@ const ProfilePage = () => {
   }
 
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleCardClick = (recipe: Recipe) => {
     navigate(`/recipe/${recipe.id}`);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-  const closeModal = () => setIsModalOpen(false);
-
   useEffect(() => {
     const fetchProfileData = async () => {
+      if (!auth.isLoggedIn) return;
       try {
         const response = await getApi(`users/me`);
         const userData = await response.json();
@@ -119,9 +113,11 @@ const ProfilePage = () => {
         <Navbar />
         <img src="/cuisto.png" alt="cuisto"></img>
         <h1>{username}</h1>
-        <button className="btnSubscribe" onClick={toggleFollow}>
-          {isFollowing ? "Se désabonner" : "S'abonner"}
-        </button>
+        {auth.isLoggedIn && (
+          <button className="btnSubscribe" onClick={toggleFollow}>
+            {isFollowing ? "Se désabonner" : "S'abonner"}
+          </button>
+        )}
       </div>
       <div className="content-home">
         <div className="corner top-left"></div>
@@ -144,12 +140,6 @@ const ProfilePage = () => {
               <p>Aucune recette trouvée</p>
             )}
           </div>
-          {selectedRecipe && (
-            <RecipeDetailsModal
-              recipe={{ ...selectedRecipe, date: new Date(selectedRecipe.date) }}
-              onClose={() => setSelectedRecipe(null)}
-            />
-          )}
         </div>
       </div>
     </div>
