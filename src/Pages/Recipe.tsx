@@ -150,7 +150,7 @@ const Recipe = () => {
             <div className="modal-body">
               <p>{recipe.description}</p>
               <p>
-                <strong>Ingrédients:</strong>
+                <strong>Ingrédientssss:</strong>
               </p>
               <ul>
                 {Object.entries(recipe.ingredients).map(([key, value]) => (
