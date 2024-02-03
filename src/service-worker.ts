@@ -163,6 +163,10 @@ self.addEventListener("push", function (event) {
   );
 });
 
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
+});
+
 registerRoute(
   RegExp('/recipes'),
   new NetworkOnly()

@@ -20,10 +20,10 @@ root.render(
 
 serviceWorkerRegistration.register({
   onUpdate: (registration) => {
-    // if (registration.waiting) {
-    //   registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    // }
-    // window.location.reload();
-    alert('New update available! Refresh to update.');
+    if (registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    window.location.reload();
+    alert('New update available!');
   },
 });
