@@ -1,0 +1,67 @@
+.page-profile {
+    background-color: #FEC845;
+    height: 100vh;
+    width: 100%;
+}
+
+.page-profile .content-home .res .results {
+    margin-left: 50px;
+    margin-top: 30px;
+}
+
+.bbb {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    display: flex;
+    justify-content: space-around;
+    font-size: large;
+}
+
+.icon2 {
+    margin: auto 5px;
+}
+
+.btnCreateRecipe {
+    position: absolute;
+    right: 50px;
+    top: 20px;
+    border-radius: 20px;
+    padding: 1em;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    transition:  all .1s ease-in-out;
+    z-index: 1;
+}
+
+.btnCreateRecipe:hover {
+    box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
+    scale: 105%;
+}
+
+.btnSubscribe {
+    position: absolute;
+    right: 60px;
+    bottom: 20px;
+    border-radius: 20px;
+    padding: 1em;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    transition:  all .1s ease-in-out;
+}
+
+.btnSubscribe:hover {
+    box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
+    scale: 105%;
+}
+
+.pad {
+    /* background-color: red; */
+    padding: 30px;
+}

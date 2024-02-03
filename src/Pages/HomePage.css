@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+
+h1 {
+    font-family: 'Caveat', cursive;
+}
+
+h1::selection {
+    color: #BF0621;
+}
+
+.page-home {
+    background-color: #FEC845;
+    height: 100vh;
+    width: 100%;
+}
+
+.header {
+    background-color: #FEC845;
+    height: 30%;
+    position: relative;
+    text-align: center;
+}
+
+.header h1 {
+    position: absolute;
+    font-size: 180px;
+    margin: 0;
+    width: 100%;
+}
+
+.header img {
+    /* z-index: 1; */
+    position: absolute;
+    left: 30px;
+    bottom: -20px;
+    height: 100%;
+    object-fit: contain;
+}
+
+.content-home {
+    height: 70%;
+    display: flex;
+    background-color: #F5F3F0;
+    overflow: auto;
+    border-radius: 20px 20px 0 0;
+    margin: 0 10px;
+    position: relative;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3);
+}
+
+.categories {
+    height: 100%;
+    min-height: 100px;
+    min-width: 180px;
+    width: 15%;
+    text-align: center;
+    overflow: none;
+}
+
+.res {
+    height: 100%;
+    width: 85%;
+}
+
+.results {
+    height: 85%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 20px;
+    column-gap: 40px;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.navigation {
+    height: 15%;
+    max-height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.button-container {
+    display: block;
+}
+
+@media screen and (max-width: 768px) {
+    .header {
+        height: 20%;
+    }
+    .header img {
+        /* z-index: 1; */
+        position: absolute;
+        width: 210px;
+        left: 30px;
+    }
+    .header h1 {
+        font-size: 100px;
+    }
+    .content-home {
+        height: 80%;
+        flex-direction: column;
+        display: block;
+    }
+    .categories {
+        height: fit-content;
+        display: block;
+    }
+
+    .categories h1 {
+        margin: 0;
+    }
+
+    .button-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+        height: fit-content;
+    }
+
+    .categories, .res {
+        width: 100%;
+    }
+    .results {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .navigation {
+        display: block;
+        height: 120px;
+    }
+
+    .res {
+        width: 100%;
+    }
+}

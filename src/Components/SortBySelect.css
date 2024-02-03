@@ -1,0 +1,43 @@
+.sortby {
+    position: absolute;
+    right: 40px;
+    height: 40px;
+    width: fit-content;
+    min-width: 160px;
+    border-radius: 30px;
+    font-size: 14px;
+    color: black;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.option-sortby,
+.select-sortby {
+    all: unset;
+    padding-top: 10px;
+}
+
+.select-sortby {
+    font-weight: 500;
+    color: black;
+}
+
+.sortby .icon {
+    top: 15px;
+    right: 5px;
+    left: auto;
+    font-size: 0.75em;
+}
+
+@media screen and (max-width: 450px) {
+    .sortby {
+        position: relative;
+        display: block;
+        margin: 10px auto;
+        right: 0;
+    }
+}

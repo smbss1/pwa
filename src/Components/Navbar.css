@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+
+.navbar {
+    padding-top: 10px;
+    z-index: 2;
+    margin: 0 10px;
+}
+
+.navbar .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: start;
+}
+
+.nav-item {
+    margin: 0 10px;
+}
+
+.nav-item a {
+    font-family: 'Caveat', cursive;
+    text-decoration: none;
+    font-size: 1.5em;
+    color: black;
+}
+
+.nav-item a:hover {
+    color: #BF0621;
+}
+
+.group-right {
+    display: flex;
+    position: absolute;
+    width: 200px;
+    justify-content: space-around;
+    right: 0;
+    z-index: 2;
+}
+
+.group-left {
+    z-index: 2;
+    display: flex;
+    position: absolute;
+    width: 400px;
+    justify-content: space-around;
+    left: 50px;
+}
+
+.navbar button {
+    background-color: white;
+    border-radius: 30px;
+    border: none;
+    color: black;
+    min-width: 100px;
+    width: fit-content;
+    height: 2.75em;
+}
+
+.signUp {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    transition:  all .1s ease-in-out;
+    cursor: pointer;
+}
+
+.signUp:hover {
+    box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
+    scale: 105%;
+}
