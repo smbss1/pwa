@@ -1,8 +1,8 @@
-import React, { useEffect, useState, ChangeEvent } from "react";
-import Modal from "./Modal";
+import React, { useState } from "react";
 import './RecipeModalForm.css';
-import { info } from "console";
 import { postApi } from "../Util/apiControleur";
+import { RecipeSchema } from "../Schemas/RecipeSchema";
+import { z } from "zod";
 
 interface IngredientForm {
   name: string;
@@ -17,6 +17,7 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
   const username = localStorage.getItem("username") || undefined
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;
+  const [errors, setErrors] = useState<z.ZodIssue[]>([]);
 
   const [formData, setFormData] = useState({
     author: user ? user.name : '',
@@ -74,7 +75,6 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-
     const recipeData = {
       title: formData.title,
       description: formData.description,
@@ -86,6 +86,25 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
       ingredients: formData.ingredients.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.quantity }), {}),
       steps: formData.steps.map(step => step.description)
     };
+
+    const formRecipeData = {
+      title: formData.title,
+      description: formData.description,
+      imageUrl: formData.imageUrl,
+      cookTime: formData.cookTime.toString(),
+      userId: +(localStorage.getItem("userId") || '0'),
+      category: formData.category,
+      servings: formData.servings.toString(),
+      ingredients: formData.ingredients,
+      steps: formData.steps.map(step => step.description)
+    };
+
+    const result = RecipeSchema.safeParse(formRecipeData);
+    if (!result.success) {
+      setErrors(result.error.issues);
+      return;
+    }
+    setErrors([]); // Clear errors if submission is successful
   
     try {
       const response = await postApi('recipes', recipeData);
@@ -133,6 +152,9 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
               onChange={handleChange}
               placeholder="Titre"
             />
+            {errors.find((err) => err.path.includes('title')) && (
+              <span style={{ color: 'red' }}>{errors.find((err) => err.path.includes('title'))?.message}</span>
+            )}
 
             <select name="category" value={formData.category} onChange={handleChange}>
               <option value="">Selectionner une categorie</option>
@@ -143,6 +165,9 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
               <option value="Dessert">Dessert</option>
               <option value="Autre">Autre</option>
             </select>
+            {errors.find((err) => err.path.includes('category')) && (
+              <span style={{ color: 'red' }}>{errors.find((err) => err.path.includes('category'))?.message}</span>
+            )}
             <p className="info">nombre de personnes</p>
             <input
               type="number"
@@ -186,10 +211,19 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
                     onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
                     placeholder="Quantité"
                   />
+                  {errors.filter((err) => err.path[0] === 'ingredients' && err.path[1] === index).map((error, errorIndex) => (
+                    <p key={errorIndex} style={{ color: 'red' }}>
+                      {error.message}
+                    </p>
+                  ))}
                 </div>
               ))}
               <button type="button" onClick={handleAddIngredient}>Ajouter un ingredient</button>
             </div>
+            {errors.find((err) => err.path.includes('ingredients')) && (
+              <span style={{ color: 'red' }}>{errors.find((err) => err.path.includes('ingredients'))?.message}</span>
+            )}
+
             <div className="steps">
               <p className="info">Étapes</p>
               {formData.steps.map((step, index) => (
@@ -203,6 +237,9 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
               ))}
               <button type="button" onClick={handleAddStep}>Ajouter une étape</button>
             </div>
+            {errors.find((err) => err.path.includes('steps')) && (
+              <span style={{ color: 'red' }}>{errors.find((err) => err.path.includes('steps'))?.message}</span>
+            )}
           </div>
         </div>
         <button type="submit" className="submit">Ajouter</button>
