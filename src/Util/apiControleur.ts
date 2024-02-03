@@ -30,7 +30,7 @@ export async function postApi(route: string, body: any) {
 export async function patchApi(route: string, body?: any) {
   const accessToken = localStorage.getItem("accessToken");
 
-  const response = await fetch(url + route, {
+  return await fetch(url + route, {
     method: "PATCH",
     headers: {
       'Content-Type': 'application/json',
@@ -38,8 +38,6 @@ export async function patchApi(route: string, body?: any) {
     },
     body: JSON.stringify(body),
   });
-
-  return await response.json();
 }
 
 export async function deleteApi(route: string, body?: any) {

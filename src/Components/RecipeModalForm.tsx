@@ -93,7 +93,7 @@ const RecipeModalForm = () => {
     try {
       const response = await postApi('recipes', recipeData);
       const data = await response.json();
-      setFormData(initialFormData)
+      setFormData({...initialFormData})
     } catch (error) {
       console.error('There was an error!', error);
     }
