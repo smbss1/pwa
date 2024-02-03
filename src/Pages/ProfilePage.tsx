@@ -54,7 +54,7 @@ const ProfilePage = () => {
       try {
         const response = await getApi(`users/me`);
         const userData = await response.json();
-        const isUserFollowing = userData.following.some((follow: Follow) => follow.followerId === parseInt(userId || '0'));
+        const isUserFollowing = userData.followers.some((follow: Follow) => follow.followingId === parseInt(userId || '0'));
         setIsFollowing(isUserFollowing);
       } catch (error) {
         console.error('Error fetching user data:', error);
