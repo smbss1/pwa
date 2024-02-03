@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import "./ProfilePage.css";
 import { getApi, getUrl, patchApi } from "../Util/apiControleur";
 
+const options: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+};
+
 const Recipe = () => {
   const { recipeId } = useParams();
   let recipeId2: number = recipeId ? parseInt(recipeId, 10) : 0;
@@ -34,7 +41,7 @@ const Recipe = () => {
     cookTime: "",
     likes: 0,
     category: "",
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toLocaleDateString(),
     ingredients: {},
     steps: [],
     author: undefined,
@@ -54,6 +61,7 @@ const Recipe = () => {
           const recipesWithAuthor = {
             ...data,
             auteur: data.author.username,
+            date: new Date(data.date).toLocaleDateString(undefined, options),
           };
           setRecipes(recipesWithAuthor);
           console.log("recette", recipesWithAuthor);

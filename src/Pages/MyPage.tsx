@@ -8,7 +8,7 @@ import RecipeCard from "../Components/RecipeCard";
 import RecipeModalForm from "../Components/RecipeModalForm";
 import Modal from "../Components/Modal";
 import "./ProfilePage.css";
-import { getApi } from "../Util/apiControleur";
+import { deleteApi, getApi } from "../Util/apiControleur";
 
 const MyPage = () => {
     interface Recipe {
@@ -32,28 +32,28 @@ const MyPage = () => {
   const { author } = useParams();
   let navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchUserRecipe = async () => {
     const userId = localStorage.getItem("userId");
-    const fetchData = async () => {
-      try {
-        const response = await getApi(`recipes/users/${userId}`);
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          const recipesWithAuthor = data.map(recipe => ({
-            ...recipe,
-            auteur: recipe.author.username, // Assume `author` is already part of each recipe object.
-          }));
-          setRecipes(recipesWithAuthor);
-        } else {
-          setRecipes([]);
-        }
-      } catch (error) {
-        console.error('There was an error!', error);
+    try {
+      const response = await getApi(`recipes/users/${userId}`);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        const recipesWithAuthor = data.map(recipe => ({
+          ...recipe,
+          auteur: recipe.author.username, // Assume `author` is already part of each recipe object.
+        }));
+        setRecipes(recipesWithAuthor);
+      } else {
         setRecipes([]);
       }
-    };
+    } catch (error) {
+      console.error('There was an error!', error);
+      setRecipes([]);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchUserRecipe();
   }, []);
 
   const handleCardClick = (recipe: Recipe) => {
@@ -62,6 +62,15 @@ const MyPage = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const canDelete = async (recipeId: number) => {
+    try {
+      await deleteApi(`recipes/${recipeId}`);
+      await fetchUserRecipe();
+    } catch (e) {
+      console.error('There was an error!', e);
+    }
+  }
 
   return (
     <div className="page-profile">
@@ -73,7 +82,7 @@ const MyPage = () => {
       <div className="content-home">
         <button className="btnCreateRecipe" onClick={openModal}>Créer une recette</button>
         <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <RecipeModalForm />
+          <RecipeModalForm onRecipeCreated={fetchUserRecipe}/>
         </Modal>
         <div className="pad">
             <div className="corner top-left"></div>
@@ -89,6 +98,10 @@ const MyPage = () => {
                         cookTime={recipe.cookTime}
                         likes={recipe.likes}
                         onCardClick={() => handleCardClick(recipe)}
+                        canDelete={evt => {
+                          evt.stopPropagation();
+                          canDelete(recipe.id)}
+                        }
                     />
                     ))
                 ) : (

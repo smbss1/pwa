@@ -13,14 +13,13 @@ interface StepForm {
   description: string;
 }
 
-const RecipeModalForm = () => {
+const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) => {
   const username = localStorage.getItem("username") || undefined
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;
 
   const [formData, setFormData] = useState({
     author: user ? user.name : '',
-    date: new Date().toISOString().split('T')[0],
     imageUrl: '',
     title: '',
     category: '',
@@ -33,7 +32,6 @@ const RecipeModalForm = () => {
 
   const initialFormData = {
     author: user ? user.name : '',
-    date: new Date().toISOString().split('T')[0],
     imageUrl: '',
     title: '',
     category: '',
@@ -85,15 +83,14 @@ const RecipeModalForm = () => {
       userId: +(localStorage.getItem("userId") || '0'),
       category: formData.category,
       servings: formData.servings.toString(),
-      date: formData.date,
       ingredients: formData.ingredients.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.quantity }), {}),
       steps: formData.steps.map(step => step.description)
     };
   
     try {
       const response = await postApi('recipes', recipeData);
-      const data = await response.json();
       setFormData({...initialFormData})
+      onRecipeCreated();
     } catch (error) {
       console.error('There was an error!', error);
     }

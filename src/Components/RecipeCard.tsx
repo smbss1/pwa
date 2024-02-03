@@ -9,6 +9,7 @@ interface ReciepeCardProps {
   description: string;
   cookTime: string;
   likes: number;
+  canDelete?: React.MouseEventHandler<HTMLButtonElement>;
   onCardClick: () => void;
 }
 
@@ -18,10 +19,12 @@ const RecipeCard: React.FC<ReciepeCardProps> = ({
   description,
   cookTime,
   likes,
+  canDelete,
   onCardClick,
 }) => {
   return (
     <div className="card" onClick={onCardClick}>
+      {canDelete && <button onClick={canDelete}>delete</button> }
       <div className="group">
         <div className="card-img">
           <img src={imageUrl} alt="reciepe img" />

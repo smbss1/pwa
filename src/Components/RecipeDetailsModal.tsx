@@ -23,6 +23,13 @@ interface RecipeDetailsModalProps {
   onClose: () => void;
 }
 
+const options: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+};
+
 const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ recipe, onClose }) => {
   return (
     <div className="modal-backdrop">
@@ -55,7 +62,7 @@ const RecipeDetailsModal: React.FC<RecipeDetailsModalProps> = ({ recipe, onClose
             <h4 className="text-center">Par <Link to={`/profile/${recipe.auteur}/${recipe.userId}`} className='author'>{recipe.auteur}</Link></h4>
           </div>
           <p><strong>J'aime:</strong> {recipe.likes}</p>
-          <p>ajouté le {recipe.date.toLocaleDateString()}</p>
+          <p>ajouté le {recipe.date.toLocaleDateString(undefined, options)}</p>
         </div>
         <div className="modal-footer">
           {/* Boutons ou autres actions */}
