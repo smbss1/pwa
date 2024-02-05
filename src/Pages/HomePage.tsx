@@ -187,7 +187,7 @@ const HomePage = () => {
       <div className="header">
         <Navbar />
         <img src="cuisto.png" alt="cuisto"></img>
-        <h1>GRAILLEsss</h1>
+        <h1>GRAILLEs</h1>
       </div>
       <div className="content-home">
         <div className="corner top-left"></div>
