@@ -135,7 +135,7 @@ function registerValidSW(swUrl: string, config?: Config) {
       // Add an event listener to send a message to the service worker to skip waiting
       // when a new version is available
       const reloadApp = () => {
-        // console.log('Reload')
+        console.log('Reload')
         // refreshing = false;
         if (navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
