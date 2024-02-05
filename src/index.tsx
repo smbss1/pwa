@@ -23,7 +23,6 @@ serviceWorkerRegistration.register({
     if (registration.waiting) {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
-    window.location.reload();
     alert('New update available!');
   },
 });

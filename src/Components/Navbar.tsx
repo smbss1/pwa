@@ -14,7 +14,6 @@ const Navbar: React.FC = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('id');
     localStorage.removeItem('accessToken');
-    window.location.reload();
     navigate('/');
   };
   

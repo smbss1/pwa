@@ -126,6 +126,7 @@ function registerValidSW(swUrl: string, config?: Config) {
     if ('serviceWorker' in navigator) {
       let refreshing: boolean;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('controllerchange')
         if (refreshing) return;
         window.location.reload();
         refreshing = true;
@@ -134,6 +135,7 @@ function registerValidSW(swUrl: string, config?: Config) {
       // Add an event listener to send a message to the service worker to skip waiting
       // when a new version is available
       const reloadApp = () => {
+        console.log('Reload')
         refreshing = false;
         if (navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
