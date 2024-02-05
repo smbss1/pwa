@@ -143,7 +143,7 @@ function registerValidSW(swUrl: string, config?: Config) {
       };
     
       window.addEventListener('appinstalled', reloadApp);
-      // window.addEventListener('focus', reloadApp);
+      window.addEventListener('focus', reloadApp);
     }
 }
 
