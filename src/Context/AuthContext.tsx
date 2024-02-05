@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { getApi, postApi } from '../Util/apiControleur';
+import { getMe } from '../features/users/index.api';
 
 interface AuthContextProps {
     isLoggedIn: boolean;
@@ -33,13 +34,16 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (token && token) {
+            if (token) {
                 try {
-                    const response = await getApi('users/me');
-                    const data = await response.json();
-                    console.log("RESPONSE:", data);
-                    localStorage.setItem("username", data.username);
-                    localStorage.setItem("userId", data.id);
+                    const { data } = await getMe.initiate(undefined)
+                    // const response = await getApi('users/me');
+                    // const data = await response.json();
+                    if (data) {
+                        console.log("RESPONSE:", data);
+                        localStorage.setItem("username", data.username);
+                        localStorage.setItem("userId", data.id.toString());
+                    }
                 } catch (error) {
                     console.error('There was an error!', error);
                 }

@@ -120,6 +120,28 @@ function registerValidSW(swUrl: string, config?: Config) {
     .catch((error) => {
       console.error('Error during service worker registration:', error);
     });
+
+
+
+    if ('serviceWorker' in navigator) {
+      let refreshing: boolean;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        window.location.reload();
+        refreshing = true;
+      });
+    
+      // Add an event listener to send a message to the service worker to skip waiting
+      // when a new version is available
+      const reloadApp = () => {
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+      };
+    
+      window.addEventListener('appinstalled', reloadApp);
+      window.addEventListener('focus', reloadApp);
+    }
 }
 
 function checkValidServiceWorker(swUrl: string, config?: Config) {

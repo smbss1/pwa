@@ -4,10 +4,10 @@ import HomePage from './Pages/HomePage';
 import LoginPage from './Pages/LoginPage';
 import ProfilePage from './Pages/ProfilePage';
 import MyPage from './Pages/MyPage';
-import Recipe from './Pages/Recipe';
 
 import { Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './Context/AuthContext';
+import { RecipePage } from './Pages/Recipe';
 
 const ProtectedRoute = () => {
     const { isLoggedIn, isLoading } = useAuth();
@@ -18,10 +18,10 @@ function App() {
     return (
         <AuthProvider>
             <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/recipe/:recipeId" element={<Recipe />} />
+                <Route path="/recipe/:recipeId" element={<RecipePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/profile/:username/:userId" element={<ProfilePage />} />
+                <Route path="/" element={<HomePage />} />
 
                 <Route element={<ProtectedRoute />}>
                     <Route path="/me/:author" element={<MyPage />} />

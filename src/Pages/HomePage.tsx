@@ -14,15 +14,14 @@ import IconButton from "../Components/IconButton";
 import SearchInput from "../Components/SearchInput";
 import SortBySelect from "../Components/SortBySelect";
 import Navbar from "../Components/Navbar";
-import RecipeDetailsModal from '../Components/RecipeDetailsModal'
 import RecipeCard from "../Components/RecipeCard";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import Recipe from "./Recipe";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getApi } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { useServiceWorkerMessage } from "../hooks/useServiceWorkerMessage";
-import { ClipLoader } from "react-spinners";
+import { getAllRecipes } from "../features/recipes/index.api";
+import { Loader } from "../Components/Loader";
 
 const HomePage = () => {
   interface Recipe {
@@ -40,7 +39,7 @@ const HomePage = () => {
     steps: string[];
   }
 
-  let [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [sortValue, setSortValue] = useState<string>('recent');
   const [inputValue, setInputValue] = useState<string>('');
@@ -53,34 +52,27 @@ const HomePage = () => {
   let category = searchParams.get('category') || '';
   const isOnline = useNetworkStatus();
 
-  const fetchUserRecipe = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await getApi('recipes');
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        const recipesWithAuthor = data.map(recipe => ({
-          ...recipe,
-          auteur: recipe.author.username,
-        }));
-        setRecipes(recipesWithAuthor);
-      } else {
-        setRecipes([]);
-      }
-    } catch (error) {
-      console.error('There was an error!', error);
+  const { data, error, refetch: fetchAllRecipes } = getAllRecipes.use({});
+  
+  useEffect(() => {
+    if (data) {
+      const recipesWithAuthor = data.map(recipe => ({
+        ...recipe,
+        auteur: recipe.author.username,
+      }));
+      setRecipes(recipesWithAuthor);
+    } else {
       setRecipes([]);
     }
-    setIsLoading(false);
-  }, []);
+  }, [data]);
 
-  useEffect(() => {
-    if (!isOnline)
-      return;
-    fetchUserRecipe();
-  }, [fetchUserRecipe, isOnline]);
+  // useEffect(() => {
+  //   if (!isOnline)
+  //     return;
+  //   fetchUserRecipe();
+  // }, [fetchUserRecipe, isOnline]);
 
-  useServiceWorkerMessage('RECIPE_SYNC_COMPLETED', fetchUserRecipe);
+  useServiceWorkerMessage('RECIPE_SYNC_COMPLETED', fetchAllRecipes);
 
   const handleCategoryClick = useCallback((category: string) => {
     setSearchParams({ category: category });
@@ -195,7 +187,7 @@ const HomePage = () => {
       <div className="header">
         <Navbar />
         <img src="cuisto.png" alt="cuisto"></img>
-        <h1>GRAILLE</h1>
+        <h1>GRAILLEsss</h1>
       </div>
       <div className="content-home">
         <div className="corner top-left"></div>
@@ -219,16 +211,11 @@ const HomePage = () => {
             <SortBySelect sortValue={sortValue} handleChange={handleChangeSelect} />
           </div>
           <div className="results">
-            {isLoading ? (
-              <ClipLoader className="loader" color={'#000'} loading={true} size={150} />
-            ) : (
-              <>
-                {filteredRecipes.length === 0 && <h2>Aucune recette trouvée</h2>}
-                {filteredRecipes.map((recipe, index) => (
-                  <RecipeCard key={index} imageUrl={recipe.imageUrl} title={recipe.title} description={recipe.description} cookTime={recipe.cookTime} likes={recipe.likes} onCardClick={() => handleCardClick(recipe)} />
-                ))}
-              </>
-            )}
+            <Loader data={recipes} isLoading={isLoading} empty={<h2>Aucune recette trouvée</h2>}>
+              {filteredRecipes.map((recipe, index) => (
+                <RecipeCard key={index} imageUrl={recipe.imageUrl} title={recipe.title} description={recipe.description} cookTime={recipe.cookTime} likes={recipe.likes} onCardClick={() => handleCardClick(recipe)} />
+              ))}
+            </Loader>
           </div>
         </div>
       </div>

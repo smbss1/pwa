@@ -1,9 +1,12 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "./ProfilePage.css";
 import { getApi, getUrl, patchApi } from "../Util/apiControleur";
 import { useAuth } from "../Context/AuthContext";
 import { ClipLoader } from "react-spinners";
+import { getRecipe } from "../features/recipes/index.api";
+import { Recipe } from "../features/recipes/index.type";
+import "./ProfilePage.css";
+import "../Components/RecipeDetailsModal.css";
 
 const options: Intl.DateTimeFormatOptions = {
   weekday: 'long',
@@ -12,31 +15,13 @@ const options: Intl.DateTimeFormatOptions = {
   day: 'numeric',
 };
 
-const Recipe = () => {
+export const RecipePage = () => {
   const { recipeId } = useParams();
   let recipeId2: number = recipeId ? parseInt(recipeId, 10) : 0;
   const auth = useAuth();
 
-  interface Recipe {
-    some(arg0: (likedRecipe: { id: { toString: () => string | undefined; }; }) => boolean): unknown;
-    author: any;
-    id: number;
-    auteur: string;
-    title: string;
-    description: string;
-    userId: number;
-    imageUrl: string;
-    cookTime: string;
-    likes: number;
-    category: string;
-    date: string;
-    ingredients: { [key: string]: string | number };
-    steps: string[];
-  }
-
   const initialRecipe: Recipe = {
     id: 0,
-    auteur: "",
     title: "",
     description: "",
     userId: 0,
@@ -48,44 +33,29 @@ const Recipe = () => {
     ingredients: {},
     steps: [],
     author: undefined,
-    some: function (arg0: (likedRecipe: { id: { toString: () => string | undefined; }; }) => boolean): unknown {
-      throw new Error("Function not implemented.");
-    }
   };
 
   const [recipe, setRecipes] = useState<Recipe>(initialRecipe);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { data, error, isLoading } = getRecipe.use({ recipeId: recipeId ?? '' });
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getApi(`recipes/${recipeId}`);
-        const data = await response.json();
-        if (data) {
-          const recipesWithAuthor = {
-            ...data,
-            auteur: data.author.username,
-            date: new Date(data.date).toLocaleDateString(undefined, options),
-          };
-          setRecipes(recipesWithAuthor);
-          console.log("recette", recipesWithAuthor);
-        } else {
-          console.log("aa");
-        }
-      } catch (error) {
-        console.error("There was an error!", error);
-      }
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, []);
+    if (data) {
+      const recipesWithAuthor: Recipe = {
+        ...data,
+        date: new Date(data.date).toLocaleDateString(undefined, options),
+      };
+      console.log(recipesWithAuthor.author)
+      setRecipes(recipesWithAuthor);
+      console.log("recette", recipesWithAuthor);
+    }
+  }, [data]);
 
   const [liked, setLiked] = useState(true);
   
   function isRecipeLiked(recipes: Recipe[], recipeIdInput: number): boolean {
-    return recipes.some(recipe => recipe.id === recipeIdInput);
+    // return recipes.some(recipe => recipe.id === recipeIdInput);
+    return false;
   }
 
   useEffect(() => {
@@ -190,10 +160,10 @@ const Recipe = () => {
               <h4 className="text-center">
                 Par{" "}
                 <Link
-                  to={`/profile/${recipe.auteur}/${recipe.userId}`}
+                  to={`/profile/${recipe.author?.username}/${recipe.userId}`}
                   className="author"
                 >
-                  {recipe.auteur}
+                  {recipe.author?.username}
                 </Link>
               </h4>
             </div>
@@ -212,5 +182,3 @@ const Recipe = () => {
     </div>
   );
 };
-
-export default Recipe;

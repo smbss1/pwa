@@ -1,46 +1,36 @@
 import React, { useState } from "react";
 import './RecipeModalForm.css';
-import { postApi } from "../Util/apiControleur";
 import { RecipeSchema } from "../Schemas/RecipeSchema";
 import { z } from "zod";
-
-interface IngredientForm {
-  name: string;
-  quantity: string;
-}
-
-interface StepForm {
-  description: string;
-}
+import { CreateRecipeDto, CreateRecipeFormDto, IngredientForm } from "../features/recipes/index.type";
+import { addRecipe } from "../features/recipes/index.api";
 
 const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) => {
-  const username = localStorage.getItem("username") || undefined
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
+  const { trigger: addRecipeTrigger } = addRecipe.use(undefined);
 
-  const [formData, setFormData] = useState({
-    author: user ? user.name : '',
+  const [formData, setFormData] = useState<CreateRecipeFormDto>({
     imageUrl: undefined,
     title: '',
     category: '',
     servings: 1,
-    cookTime: 1,
+    cookTime: '1',
     description: '',
-    ingredients: [] as IngredientForm[],
-    steps: [] as StepForm[],
+    ingredients: [],
+    steps: [],
   });
 
-  const initialFormData = {
-    author: user ? user.name : '',
+  const initialFormData: CreateRecipeFormDto = {
     imageUrl: undefined,
     title: '',
     category: '',
     servings: 1,
-    cookTime: 1,
+    cookTime: '1',
     description: '',
-    ingredients: [] as IngredientForm[],
-    steps: [] as StepForm[],
+    ingredients: [],
+    steps: [],
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -75,27 +65,16 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    const recipeData = {
-      title: formData.title,
-      description: formData.description,
-      imageUrl: formData.imageUrl,
-      cookTime: formData.cookTime.toString(),
-      userId: +(localStorage.getItem("userId") || '0'),
-      category: formData.category,
-      servings: formData.servings.toString(),
-      ingredients: formData.ingredients.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.quantity }), {}),
+    const recipeData: CreateRecipeDto = {
+      ...formData,
+      userId: user.userId,
+      ingredients: formData.ingredients.reduce<Record<string, string>>((acc, curr) => ({ ...acc, [curr.name]: curr.quantity }), {}),
       steps: formData.steps.map(step => step.description)
     };
 
     const formRecipeData = {
-      title: formData.title,
-      description: formData.description,
-      imageUrl: formData.imageUrl,
-      cookTime: formData.cookTime.toString(),
-      userId: +(localStorage.getItem("userId") || '0'),
-      category: formData.category,
-      servings: formData.servings.toString(),
-      ingredients: formData.ingredients,
+      ...formData,
+      userId: user.userId,
       steps: formData.steps.map(step => step.description)
     };
 
@@ -107,7 +86,7 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
     setErrors([]); // Clear errors if submission is successful
   
     try {
-      const response = await postApi('recipes', recipeData);
+      await addRecipeTrigger(recipeData);
       setFormData({...initialFormData})
       onRecipeCreated();
     } catch (error) {
@@ -123,14 +102,6 @@ const RecipeModalForm = ({ onRecipeCreated }: { onRecipeCreated: () => void }) =
       <form onSubmit={handleSubmit} className="recipe-form">
         <div className="createRecipeForm-layout">
           <div className="createRecipe-left">
-            <input
-              className="readOnly"
-              type="text"
-              name="author"
-              value={username}
-              placeholder="Author"
-              readOnly
-            />
             <input
               className="readOnly"
               type="date"
