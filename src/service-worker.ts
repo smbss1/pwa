@@ -47,17 +47,20 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 // precacheAndRoute(self.__WB_MANIFEST);
 
+precacheAndRoute(self.__WB_MANIFEST.filter(
+  (_) => false
+ ));
 
-const toPrecache = self.__WB_MANIFEST.filter(
-  (file) => typeof file !== 'string' && !file.url.includes('index.html'),
-)
+// const toPrecache = self.__WB_MANIFEST.filter(
+//   (file) => typeof file !== 'string' && !file.url.includes('index.html'),
+// )
 
-precacheAndRoute(toPrecache)
+// precacheAndRoute(toPrecache)
 
-registerRoute(
-  ({ url }) => url.pathname.includes('index.html'),
-  new NetworkFirst(),
-)
+// registerRoute(
+//   ({ url }) => url.pathname.includes('index.html'),
+//   new NetworkFirst(),
+// )
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
