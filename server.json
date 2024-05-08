@@ -1,0 +1,29 @@
+{
+    "baseUrl": "http://localhost:7000",
+    "handlers": {
+        "getUsers.js": "export default async (req, res) => { return \"Hello World\"; }"
+    },
+    "endpoints": [
+        {
+            "url": "/users/:id",
+            "method": "GET",
+            "handler": {
+                "type": "function",
+                "import": "getUsers.js"
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "number"
+                }
+            ],
+            "body": [
+                {
+                    "name": "username",
+                    "type": "string",
+                    "required": true
+                }
+            ]
+        }
+    ]
+}

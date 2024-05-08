@@ -114,11 +114,6 @@ function registerValidSW(swUrl: string, config?: Config) {
               }
             }
           }
-
-          if (installingWorker.state === 'activated') {
-              console.log('Content activated.');
-              window.location.reload()
-          }
         };
       };
     })
